@@ -3,17 +3,17 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ConcurrentNode 
 {
     public Present data;
-    public ConcurrentNode next;
-    public ConcurrentNode prev;
+    public ConcurrentNode next = null;
+    public ConcurrentNode prev = null;
     public ReentrantLock lock = new ReentrantLock();
-    public boolean marked;
+    public boolean marked = false;
     public int key;
     
     public ConcurrentNode(Present data)
     {
         this.data = data;
         this.next = null;
-        this.key = this.hashCode();
+        this.key = data.number;
     }
 
     public void lock()

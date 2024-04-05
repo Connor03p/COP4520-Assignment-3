@@ -1,16 +1,17 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 class SharedMem
 {
-    private static List<Reading> readings = new ArrayList<Reading>();
+    private static ConcurrentLinkedQueue<Reading> readings = new ConcurrentLinkedQueue<>();
 
-    public static synchronized void addReading(Reading reading)
+    public static void addReading(Reading reading)
     {
         readings.add(reading);
     }
 
-    public static synchronized List<Reading> copy()
+    public static List<Reading> copy()
     {
         List<Reading> copy = new ArrayList<Reading>(readings);
         return copy;

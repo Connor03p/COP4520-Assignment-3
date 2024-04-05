@@ -19,20 +19,30 @@ import java.util.concurrent.*;
 
 public class App 
 {
-    public static final long timeMultiplier = 600;
+    public static final long timeMultiplier = 1800;
     public static final long sensorInterval = 1000 * 60;
     public static final long reportInterval = 1000 * 60 * 60;
+
+    // Requires reduced time multiplier 
+    public static final boolean PRINT_SCHEDULE = false;
+    public static final boolean PRINT_READINGS = false; 
+
+
+    public static final boolean STOP_IF_RUNNING_BEHIND = true;
     public static int numReports = 1;
 
     private final ScheduledExecutorService executor;
     private final PriorityBlockingQueue<Task> queue;
 
+    public static long startTime = System.currentTimeMillis();
+
     public App() {
-        executor = Executors.newScheduledThreadPool(10); // Example: 5 threads
-        queue = new PriorityBlockingQueue<>(10, Comparator.comparingLong(task -> {
+        executor = Executors.newScheduledThreadPool(8);
+        queue = new PriorityBlockingQueue<>(9, Comparator.comparingLong(task -> {
             long currentTime = System.currentTimeMillis();
             long timeSinceLastExecution = currentTime - task.getLastExecutionTime();
-            return Math.max(0, task.getInterval() - timeSinceLastExecution);
+            long nextExecutionTime = Math.max(0, task.interval - timeSinceLastExecution);
+            return nextExecutionTime + task.intervalOffset;
         }));
     }
 
@@ -43,7 +53,7 @@ public class App
     public void start() 
     {
         int numTasks = queue.size();
-        for (int i = 0; i < numTasks; i++) // Example: 5 threads
+        for (int i = 0; i < numTasks; i++)
         {
             Task task;
             try
@@ -57,16 +67,22 @@ public class App
                 return;
             }
 
+            long delay = Math.max(0, Math.min(task.interval - task.intervalOffset, task.interval));
+            
+            if (PRINT_SCHEDULE)
+                System.out.println("Starting " + task.name + " in " + delay + " ms");
+
             executor.schedule(() -> {
                 task.run();
-                Task newTask = task instanceof Sensor ? new Sensor() : new Report();
+                Task newTask = task;
                 queue.offer(newTask); // Reschedule the task
-                executor.schedule(this::start, newTask.getInterval(), TimeUnit.MILLISECONDS); // Reschedule the start method
-            }, task.getInterval(), TimeUnit.MILLISECONDS);
+                executor.schedule(this::start, delay, TimeUnit.MILLISECONDS); // Reschedule the start method
+            }, delay, TimeUnit.MILLISECONDS);
         }
     }
 
     public static void main(String[] args) {
+        System.out.println("Starting...");
         App scheduler = new App();
         scheduler.scheduleTask(new Report());
         scheduler.scheduleTask(new Sensor());
@@ -78,6 +94,7 @@ public class App
         scheduler.scheduleTask(new Sensor());
         scheduler.scheduleTask(new Sensor());
         
+        startTime = System.currentTimeMillis();
         scheduler.start();
     }
 }

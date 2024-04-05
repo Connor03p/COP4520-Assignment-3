@@ -34,61 +34,33 @@ public class Servant extends Thread
         Present presentFromBag = null;
 
         // Take a present from the bag
-        synchronized (App.bagOfPresents)
+        if (!App.bagOfPresents.isEmpty())
         {
-            if (App.bagOfPresents.size() > 0)
-            {
-                presentFromBag = App.bagOfPresents.remove(0);
-            }
+            presentFromBag = App.bagOfPresents.remove(0);
         }
 
         // Add the present to the chain
         if (presentFromBag != null)
         {
-            synchronized (App.listOfPresents)
-            {
-                App.listOfPresents.add(presentFromBag);
-            }
+            App.listOfPresents.add(presentFromBag.number);
         }
     }
 
     public void writeNote()
     {
-        Node presentFromList = null;
-
         // Unlink the gift from its predecessor
-        synchronized (App.listOfPresents)
-        {
-            if (App.listOfPresents.size > 0)
-            {
-                presentFromList = App.listOfPresents.remove(0);
-            }
-        }
+        Present presentFromList = App.listOfPresents.removeFirst();
 
         // Write a “Thank you” card to a guest
         if (presentFromList != null)
         {
-            synchronized (App.bagOfNotes)
-            {
-                App.bagOfNotes.add(new Note(presentFromList.data.number));
-            }
+            App.bagOfNotes.add(new Note(presentFromList.number));
         }   
     }
 
     public void checkPresent()
     {
-        if (App.listOfPresents.size == 0)
-            return;
-        
         int presentIndex = random.nextInt(App.NUMBER_OF_GUESTS);
-
-        // Check whether a gift with a particular tag was present in the chain or not
-        synchronized (App.listOfPresents)
-        {
-            if (App.listOfPresents.size > 0)
-            {
-                App.listOfPresents.contains(new Present(presentIndex));
-            }
-        }
+        App.listOfPresents.contains(presentIndex);
     }
 }

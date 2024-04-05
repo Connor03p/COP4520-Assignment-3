@@ -1,17 +1,17 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class App 
 {
     public static final int NUMBER_OF_GUESTS = 50000;
-    public static final boolean DEBUG = false; // Print each list and check for errors. Takes awhile with large # of guests.
-    private static final Servant servants[] = {new Servant()};
+    public static final boolean PRINT_EACH_ACTION = false; // Print each action taken by the servants
+    public static final boolean CHECK_FOR_ERRORS = false; // Print each list and check for errors. Takes awhile with large # of guests.
+    private static final Servant servants[] = {new Servant(),new Servant(),new Servant(),new Servant()};
 
-    public static List<Present> bagOfPresents = new ArrayList<Present>();
-    public static List<Note> bagOfNotes = new ArrayList<Note>();
-    public static LinkedList listOfPresents = new LinkedList();
+    public static List<Present> bagOfPresents = Collections.synchronizedList(new ArrayList<Present>());
+    public static List<Note> bagOfNotes = Collections.synchronizedList(new ArrayList<Note>());
+    public static ConcurrentLinkedList listOfPresents = new ConcurrentLinkedList();
     private static double time;
 
     public static void main(String[] args) throws Exception 
@@ -39,7 +39,8 @@ public class App
         // Stop the timer
         time = ((System.nanoTime() - time) / 1000000000.0);
 
-        if (DEBUG)
+        /* 
+        if (CHECK_FOR_ERRORS)
         {
             System.out.println("\nBag of Notes: " + bagOfNotes.size());
             for (int i = 0; i < bagOfNotes.size(); i++)
@@ -53,8 +54,8 @@ public class App
                 System.out.println("  Present " + i + ": " + bagOfPresents.get(i).number);
             }
 
-            System.out.println("\nList of Presents: " + listOfPresents.size);
-            Node current = listOfPresents.getFirst();
+            System.out.println("\nList of Presents: ");
+            ConcurrentNode current = listOfPresents.getFirst();
             while (current != null)
             {
                 System.out.println("  Present " + current.data.number);
@@ -63,7 +64,7 @@ public class App
 
             System.out.println("\nChecking for errors...");
 
-            if (NUMBER_OF_GUESTS != listOfPresents.size + bagOfNotes.size() + bagOfPresents.size())
+            if (NUMBER_OF_GUESTS != bagOfNotes.size() + bagOfPresents.size())
                 System.out.println("The # of guests does not match the # items in each list");
             
             if (!bagOfPresents.isEmpty())
@@ -114,7 +115,7 @@ public class App
             current = listOfPresents.getFirst();
             while (current != null)
             {
-                Node next = current.next;
+                ConcurrentNode next = current.next;
                 while (next != null)
                 {
                     if (current.data.number == next.data.number)
@@ -128,5 +129,6 @@ public class App
         }
         
         System.out.println("\nFinished in " + time + " seconds.");
+    */
     }
 }

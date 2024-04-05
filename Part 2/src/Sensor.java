@@ -9,7 +9,8 @@ class Sensor extends Task
     {   
         Reading reading = new Reading(System.currentTimeMillis());
         SharedMem.addReading(reading);
-        System.out.println("Recorded Data: " + reading.value + "F, Offset: " + intervalOffset + " ms");
+        if (App.PRINT_READINGS)
+            System.out.println("Recorded Data: " + reading.value + "F, Offset: " + intervalOffset + " ms");
         checkIntervalOffset();        
     }
 }

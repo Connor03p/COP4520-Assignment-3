@@ -28,8 +28,9 @@ class Report extends Task
         for (int i = 0; i < reportHighest; i++)
         {
             Reading max = readingsCopy.get(0);
-            for (Reading reading : readingsCopy)
+            for (int j = 0; j < readingsCopy.size(); j++)
             {
+                Reading reading = readingsCopy.get(j);
                 if (reading.value > max.value)
                 {
                     max = reading;
@@ -42,8 +43,9 @@ class Report extends Task
         for (int i = 0; i < reportLowest; i++)
         {
             Reading min = readingsCopy.get(0);
-            for (Reading reading : readingsCopy)
+            for (int j = 0; j < readingsCopy.size(); j++)
             {
+                Reading reading = readingsCopy.get(j);
                 if (reading.value < min.value)
                 {
                     min = reading;
@@ -55,26 +57,36 @@ class Report extends Task
 
         String output = "\nReport Finished:";
         output += ("\n  Highest: ");
-        for (Reading reading : highest)
+        for (int i = 0; i < highest.size(); i++)
         {
+            Reading reading = highest.get(i);
             output += reading.value + ", ";
         }
 
         output += "\n  Lowest: ";
-        for (Reading reading : lowest)
+        for (int i = 0; i < lowest.size(); i++)
         {
+            Reading reading = lowest.get(i);
             output += reading.value + ", ";
         }
 
-        // Find the largest temperature difference taken within reportDifferenceInterval
-        Reading maxDiff = readingsCopy.get(0);
-        Reading minDiff = readingsCopy.get(0);
+        // Find the greatest difference within a 10 minute interval
+        Reading maxDiff = new Reading(0);
+        Reading minDiff = new Reading(0);
         for (int i = 0; i < readingsCopy.size(); i++)
         {
-            for (int j = i + 1; j < readingsCopy.size(); j++)
+            for (int j = 0; j < readingsCopy.size(); j++)
             {
                 Reading reading1 = readingsCopy.get(i);
                 Reading reading2 = readingsCopy.get(j);
+
+                // Get the time difference between the two readings
+                long timeDiff = Math.abs(reading1.time - reading2.time);
+
+                // Ensure the time difference is within the interval (10 minutes)
+                if (timeDiff > differenceInterval) continue;
+
+                // Check if the value difference is the greatest
                 if (Math.abs(reading1.value - reading2.value) > Math.abs(maxDiff.value - minDiff.value))
                 {
                     maxDiff = reading1;
@@ -82,13 +94,15 @@ class Report extends Task
                 }
             }
         }
-        output += "\n  Largest difference in a " + differenceInterval + " minute interval was between " + maxDiff.value + " and " + minDiff.value + "\n";
+        
+        output += "\n  Largest difference in a " + differenceInterval + " minute interval was between " + maxDiff.value + " (taken at " + maxDiff.time + ") and " + minDiff.value + " (taken at " + minDiff.time + ")\n";
         System.out.println(output);
 
         App.numReports--;
         if (App.numReports == 0)
         {
             System.out.println("All reports compiled");
+            System.out.println("Finished in " + (System.currentTimeMillis() - App.startTime) + " ms");
             System.exit(0);
         }
 

@@ -18,9 +18,17 @@ abstract class Task implements Runnable
         long currentTime = System.currentTimeMillis();
         long timeSinceLastExecution = currentTime - lastExecutionTime;
         lastExecutionTime = System.currentTimeMillis();
-        intervalOffset = interval - timeSinceLastExecution;
-        if (intervalOffset > interval) {
-            System.out.println("Task missed its interval by " + intervalOffset + "ms");
+        intervalOffset = timeSinceLastExecution;
+
+        // Check if the task is running behind
+        if (intervalOffset > interval * 2)
+        {
+            System.out.println(name + " missed an interval behind by " + Math.abs(intervalOffset - interval) + " ms (Interval: " + interval + " ms, Offset: " + intervalOffset + " ms)");
+            if (App.STOP_IF_RUNNING_BEHIND)
+            {
+                System.out.println("Stopping...");
+                System.exit(0);
+            }
         }
     }
 
