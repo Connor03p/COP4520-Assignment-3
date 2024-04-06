@@ -51,7 +51,7 @@ public class Servant extends Thread
         // Unlink the gift from its predecessor
         Present presentFromList = App.listOfPresents.removeFirst();
 
-        // Write a “Thank you” card to a guest
+        // Write a "Thank you" card to a guest
         if (presentFromList != null)
         {
             App.bagOfNotes.add(new Note(presentFromList.number));

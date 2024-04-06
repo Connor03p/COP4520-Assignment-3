@@ -1,29 +1,27 @@
 public class ConcurrentLinkedList {
-    private ConcurrentNode head;
-    private int size;
+    private Node head;
 
     public ConcurrentLinkedList() {
-        head = new ConcurrentNode(new Present(Integer.MIN_VALUE));
-        head.next = new ConcurrentNode(new Present(Integer.MAX_VALUE));
-        size = 0;
+        head = new Node(new Present(Integer.MIN_VALUE));
+        head.next = new Node(new Present(Integer.MAX_VALUE));
     }
 
     public boolean isEmpty() {
         return head.next.key == Integer.MAX_VALUE;
     }
 
-    public ConcurrentNode getFirst() {
+    public Node getHead() {
         return head;
     }
 
-    private boolean validate(ConcurrentNode pred, ConcurrentNode curr) {
+    private boolean validate(Node pred, Node curr) {
         return !pred.marked && !curr.marked && pred.next == curr;
     }
 
     public boolean add(int key) {
         while (true) {
-            ConcurrentNode pred = head;
-            ConcurrentNode curr = pred.next;
+            Node pred = head;
+            Node curr = pred.next;
             while (curr.key <= key) {
                 pred = curr;
                 curr = curr.next;
@@ -33,7 +31,7 @@ public class ConcurrentLinkedList {
             try {
                 if (validate(pred, curr)) {
                     if (curr.key != key) {
-                        ConcurrentNode node = new ConcurrentNode(new Present(key));
+                        Node node = new Node(new Present(key));
                         node.next = curr;
                         pred.next = node;
                         if (App.PRINT_EACH_ACTION)
@@ -50,8 +48,8 @@ public class ConcurrentLinkedList {
 
     public Present removeFirst()
     {
-        ConcurrentNode pred = head;
-        ConcurrentNode curr = pred.next;
+        Node pred = head;
+        Node curr = pred.next;
         pred.lock();
         curr.lock();
         try
@@ -63,7 +61,6 @@ public class ConcurrentLinkedList {
                     curr.marked = true;
                     Present output = curr.data;
                     pred.next = curr.next;
-                    size--;
                     if (App.PRINT_EACH_ACTION)
                         System.out.println("Removed " + output.number + " from the list");
                     return output;
@@ -78,22 +75,11 @@ public class ConcurrentLinkedList {
         return null;
     }
 
-    public Present get(int index) {
-        if (index < 0 || index >= size) {
-            return null;
-        }
-        ConcurrentNode current = head;
-        for (int i = 0; i < index; i++) {
-            current = current.next;
-        }
-        return current.data;
-    }
-
     public boolean contains(int key) 
     {
         while (true) {
-            ConcurrentNode pred = head; 
-            ConcurrentNode curr = pred.next;
+            Node pred = head; 
+            Node curr = pred.next;
             while (curr.key < key) {
                 pred = curr;
                 curr = curr.next;

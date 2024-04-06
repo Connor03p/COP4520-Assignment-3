@@ -4,7 +4,7 @@ import java.util.List;
 
 public class App 
 {
-    public static final int NUMBER_OF_GUESTS = 50000;
+    public static final int NUMBER_OF_GUESTS = 500000;
     public static final boolean PRINT_EACH_ACTION = false; // Print each action taken by the servants
     public static final boolean CHECK_FOR_ERRORS = false; // Print each list and check for errors. Takes awhile with large # of guests.
     private static final Servant servants[] = {new Servant(),new Servant(),new Servant(),new Servant()};
@@ -39,7 +39,7 @@ public class App
         // Stop the timer
         time = ((System.nanoTime() - time) / 1000000000.0);
 
-        /* 
+        
         if (CHECK_FOR_ERRORS)
         {
             System.out.println("\nBag of Notes: " + bagOfNotes.size());
@@ -55,7 +55,7 @@ public class App
             }
 
             System.out.println("\nList of Presents: ");
-            ConcurrentNode current = listOfPresents.getFirst();
+            Node current = listOfPresents.getHead();
             while (current != null)
             {
                 System.out.println("  Present " + current.data.number);
@@ -102,33 +102,8 @@ public class App
                     }
                 }
             }
-            for (int i = 0; i < bagOfPresents.size(); i++)
-            {
-                for (int j = i + 1; j < bagOfPresents.size(); j++)
-                {
-                    if (bagOfPresents.get(i).number == bagOfPresents.get(j).number)
-                    {
-                        System.out.println("  Duplicate present in bag: " + bagOfPresents.get(i).number);
-                    }
-                }
-            }
-            current = listOfPresents.getFirst();
-            while (current != null)
-            {
-                ConcurrentNode next = current.next;
-                while (next != null)
-                {
-                    if (current.data.number == next.data.number)
-                    {
-                        System.out.println("  Duplicate present in list: " + current.data.number);
-                    }
-                    next = next.next;
-                }
-                current = current.next;
-            }
         }
         
         System.out.println("\nFinished in " + time + " seconds.");
-    */
     }
 }

@@ -17,7 +17,9 @@ class Report extends Task
 
         int reportHighest = 5;
         int reportLowest = 5;
-        int differenceInterval = 10;
+        long differenceInterval = 10;
+        
+        differenceInterval = ((1000 * 60 * differenceInterval) / App.timeMultiplier);
 
         if (readingsCopy.size() < (reportHighest + reportLowest))
         {
@@ -95,7 +97,7 @@ class Report extends Task
             }
         }
         
-        output += "\n  Largest difference in a " + differenceInterval + " minute interval was between " + maxDiff.value + " (taken at " + maxDiff.time + ") and " + minDiff.value + " (taken at " + minDiff.time + ")\n";
+        output += "\n  Largest difference in a 10 minute interval (" + differenceInterval + "ms) was between " + maxDiff.value + " (at " + maxDiff.time + "ms) and " + minDiff.value + " (at " + minDiff.time + "ms)\n";
         System.out.println(output);
 
         App.numReports--;

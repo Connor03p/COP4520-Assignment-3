@@ -1,15 +1,15 @@
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ConcurrentNode 
+public class Node 
 {
     public Present data;
-    public ConcurrentNode next = null;
-    public ConcurrentNode prev = null;
+    public Node next = null;
+    public Node prev = null;
     public ReentrantLock lock = new ReentrantLock();
     public boolean marked = false;
     public int key;
     
-    public ConcurrentNode(Present data)
+    public Node(Present data)
     {
         this.data = data;
         this.next = null;

@@ -28,9 +28,12 @@ Until all "Thank you" cards are written, servants will randomly assign themselve
 1. Take a present from the bag and add it to the correct position in the linked list
 2. Remove a present from the linked list and write a "Thank you" card for it
 3. Check whether a guest's gift is in the chain or not. (Though nothing is done with this information)
-To minimize waiting,
-The program uses a slightly modified version of the concurrent linked list with lazy synchronization from the textbook.
+
+To minimize waiting, the program uses a concurrent linked list with lazy synchronization from the textbook. Instead of the whole list being locked when a thread is working on it, this method only locks the nodes being accessed and modified. This way, concurrent threads can run operations on the list, so long as they are working on different parts of the list.
+
 Unfortunately, I found that the runtime for a single servant is slightly faster than for four in my testing. This could be caused by a few factors. This could be due to how the bags are handled, as they use synchronized arraylists instead of concurrent lists. The third task of checking for gifts in the chain can also contribute to this since nothing is done with the results of that check.
+
+To ensure the results are correct, there are several checks that can be enabled by the DEBUG constant. These tests check that the bag of presents and the list of presents are empty, that each guest got a note written for them, and that there are no duplicates in any of the lists
 
 
 ## Part 2
@@ -38,5 +41,25 @@ You are tasked with the design of the module responsible for measuring the atmos
 
 ### Solution
 To simulate time passing, I used java's ScheduledExecutorService, which can be used to schedule threads to run after some delay. Tasks keep track of when they were last run, and will keep track of how well they are keeping on schedule with a intervalOffset variable. This is used to report if a sensor is running far enough behind schedule to miss a recording, as well as adjust how often a new sensor recording is scheduled. Along with this, a PriorityBlockingQueue is used to ensure that sensors that are running behind get top priority. Combined, they ensure that sensors will always be able to take their recording within reasonable time constraints. To further improve performance, the shared memory uses a concurrent linked queue, Java's built-in version of the linked list made for part one.
-Since simulating this situation with real minutes or hours would take too long, there is a timeMultiplier constant that can change how quickly one simulated minute passes. It is currently set to 1200, so that each second simulates 20 minutes. There are also constants for how much information the program prints, but the time scale should be reduced if these are used, as it causes delays and can easily result in threads falling behind.
-In my testing without printing, the time scale could be increased up to 3000 (50 minutes / second) before some threads would begin consistently falling behind.
+
+Since simulating this situation with real minutes or hours would take too long, there is a timeMultiplier constant that can change how quickly one simulated minute passes. It is currently set to 1800, so that each second simulates 30 minutes. There are also constants for how much information the program prints, but the time scale should be reduced if these are used, as it causes delays and can easily result in threads falling behind.
+In my testing without printing, the time scale could be increased up to 2400 (40 minutes / second) before some sensors would regularly fall behind.
+
+To check that the output is correct, there are constants to toggle logging for any sensor recordings and to see how each sensor task is scheduled. These options cause significant delay to threads though, and can easily cause them to fall behind schedule. If used, the time multiplier should be reduced to give the sensor threads enough time to print their recordings. There is also a constant to end the program if a thread misses an interval.
+
+## How to compile and run
+### Part 1
+
+Open a command prompt window in `\Part 1\src`
+
+Run `javac App.java` to compile
+
+Run `java App` to run the program
+
+### Part 2
+
+Open a command prompt window in `\Part 2\src`
+
+Run `javac App.java` to compile
+
+Run `java App` to run the program
